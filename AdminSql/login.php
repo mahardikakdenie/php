@@ -1,5 +1,23 @@
 <?php
-require "index.php";
+session_start();
+require "function.php";
+// cek cookie
+if (isset($_COOKIE['L091N']) && isset($_COOKIE['key'])) {
+    $id = $_COOKIE['L091N'];
+    $key = $_COOKIE['key'];
+
+    // ambil username
+    $result = mysqli_query($conn, "SELECT username FROM users WHERE id = $id");
+    $row = mysqli_fetch_assoc($result);
+    // cek cookie 
+    if ($key === hash('sha256', $row['username'])) {
+        $_SESSION['login'] = true;
+    }
+}
+if (isset($_SESSION["login"])) {
+    header("Location: admin.php");
+}
+
 if (isset($_POST["login"])) {
     $username = $_POST["username"];
     $password = $_POST["password"];
@@ -12,6 +30,13 @@ if (isset($_POST["login"])) {
         // cek password
         $row = mysqli_fetch_assoc($result);
         if (password_verify($password, $row["password"])) {
+            $_SESSION["login"] = true;
+            // cek remember me 
+            if (isset($_POST["remember"])) {
+                // buat cookie
+                setcookie('L091N', $row['id'], time() + 60);
+                setcookie('key', hash('sha256', $row['username']), time() + 60);
+            }
             header("Location: admin.php");
             exit;
         }
@@ -31,6 +56,7 @@ if (isset($_POST["login"])) {
 </head>
 
 <body>
+
     <h1>Halaman Login</h1>
     <?php if (isset($error)) : ?>
     <h4 style="color: red ; font-style: italic">Username Atau Password salah</h4>
@@ -45,6 +71,10 @@ if (isset($_POST["login"])) {
             <li>
                 <label for="password">password</label>
                 <input type="password" name="password" id="password">
+            </li>
+            <li>
+                <input type="checkbox" name="remember" id="remember">
+                <label for="remember">Remember Me</label>
             </li>
             <li>
                 <button type="submit" name="login">Login</button>

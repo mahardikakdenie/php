@@ -1,5 +1,5 @@
 <?php
-require "index.php";
+require "function.php";
 if (isset($_POST["register"])) {
 
     if (Registrasi($_POST) > 0) {

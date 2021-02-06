@@ -1,5 +1,5 @@
 <?php
-require 'index.php';
+require "function.php";
 // ambil data
 $id = $_GET["id"];
 // query data mahasiswa berdasarkan ID

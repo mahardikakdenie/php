@@ -1,5 +1,9 @@
 <?php
-require 'index.php';
+session_start();
+if (!isset($_SESSION["login"])) {
+    header("Location: login.php");
+}
+require "function.php";
 $mahasiswa = query("SELECT * FROM mahasis3 ORDER BY id DESC ");
 
 // tombol cari di klik
@@ -17,7 +21,7 @@ if (isset($_POST["cari"])) {
 </head>
 
 <body>
-
+    <a href="logout.php">Logout</a>
     <h1>Daftar Mahasiswa</h1>
 
     <form action="" method="post">
